@@ -34,6 +34,7 @@ public class AccountDaoDB implements AccountDao {
 
 	public Account addAccount(Account a) {
 		String query = "INSERT INTO accountTable (id, ownerId, balance, approved, accountType) VALUES (?, ?, ?, ?, ?)";
+		
 		try {
 			pstmt = conn.prepareStatement(query);
 
@@ -42,9 +43,9 @@ public class AccountDaoDB implements AccountDao {
 			pstmt.setDouble(3, a.getBalance());
 			pstmt.setBoolean(4, a.isApproved());
 			if (a.getType() == null) {
-				pstmt.setString(6, "");
+				pstmt.setString(5, "");
 			} else {
-				pstmt.setString(6, a.getType().toString());
+				pstmt.setString(5, a.getType().toString());
 			}
 			pstmt.execute();
 		} catch (SQLException e) {
@@ -133,17 +134,17 @@ public class AccountDaoDB implements AccountDao {
 	}
 
 	public Account updateAccount(Account a) {
-		String query = "UPDATE accountTable SET balance=?, WHERE id=?";
+		String query = "UPDATE accountTable SET balance=? WHERE id=?";
 		try {
 			pstmt = conn.prepareStatement(query);
 			pstmt.setDouble(1, a.getBalance());
-			pstmt.setInt(2, a.getOwnerId());
+			pstmt.setInt(2, a.getId());
+			accountList.add(a);
 			pstmt.executeUpdate();
-			return a;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return a;
 	}
 
 	public boolean removeAccount(Account a) {

@@ -3,8 +3,10 @@ package com.revature.dao;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,9 +17,8 @@ public class TransactionDaoFile implements TransactionDao {
 
 	public static String fileLocation = "transactions.txt";
 	//File transFile = new File(fileLocation);
-	public static List<Transaction> transList = new ArrayList<Transaction>();
-	List<Account> acountList = new ArrayList<Account>();
-	
+	List<Transaction> transList = new ArrayList<Transaction>();
+	List<Account> accountList = new ArrayList<Account>();
 	public TransactionDaoFile() {
 		File transFile = new File(fileLocation);
 		if(!transFile.exists()) {
@@ -28,15 +29,47 @@ public class TransactionDaoFile implements TransactionDao {
 			}
 		}
 	}
+	public Transaction addTransaction(Transaction transactions) {
+		transList = getAllTransactions();
+		transList.add(transactions);
+		try (ObjectOutputStream transOutput = new ObjectOutputStream(new FileOutputStream(fileLocation))) {
+			transOutput.writeObject(transactions);
+			transOutput.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return transactions;
+	}
 
-
-	@SuppressWarnings("unchecked")
+//	public List<Transaction> getAllTransactions() {
+//		Transaction t = new Transaction();
+//		tranOsList.add(t);
+//		try (ObjectOutputStream transOutput = new ObjectOutputStream(new FileOutputStream(fileLocation))) {
+//			transOutput.writeObject(transList);
+//			transOutput.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		try (ObjectInputStream transInput = new ObjectInputStream(new FileInputStream(fileLocation))) {
+//			List transList = (List<Transaction>)transInput.readObject();
+//			transInput.close();
+//
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//			e.printStackTrace();
+//		}
+//
+//		return transList;
+//	}}
 	public List<Transaction> getAllTransactions() {
 		//try (ObjectInputStream transInput = new ObjectInputStream(new FileInputStream(fileLocation))) {
 		try {
 			FileInputStream transFile = new FileInputStream(fileLocation);
 			ObjectInputStream transInput = new ObjectInputStream(transFile);
-			acountList = (ArrayList<Account>)transInput.readObject();
+			List transList = (List<Transaction>)transInput.readObject();
 			transInput.close();
 
 		} catch (FileNotFoundException e) {
@@ -47,7 +80,7 @@ public class TransactionDaoFile implements TransactionDao {
 			e.printStackTrace();
 		}
 
-		for (Account account : acountList) {
+		for (Account account : accountList) {
 			if (account.getTransactions() != null) {
 				List<Transaction> transactions = account.getTransactions();
 				for (Transaction t : transactions) {
@@ -59,18 +92,3 @@ public class TransactionDaoFile implements TransactionDao {
 		return transList;
 	}
 }
-
-/*
- * transList = getAllTransactions(); transList.add(t); try { FileOutputStream
- * transOutFile = new FileOutputStream(transFile); ObjectOutputStream
- * transOutput = new ObjectOutputStream(transOutFile);
- * transOutput.writeObject(t); } catch (IOException e) { e.printStackTrace(); }
- * return t; }
- * 
- * public List<Transaction> getAllTransactions() { try { FileInputStream
- * transInFile = new FileInputStream(fileLocation); ObjectInputStream transInput
- * = new ObjectInputStream(transInFile); transList.add((Transaction)
- * transInput.readObject()); } catch (FileNotFoundException e) {
- * e.printStackTrace(); } catch (IOException e) { e.printStackTrace(); } catch
- * (ClassNotFoundException e) { e.printStackTrace(); } return transList; } }
- */

@@ -10,6 +10,7 @@ import com.revature.beans.Transaction;
 public interface TransactionDao {
 	
 	
+	public Transaction addTransaction(Transaction t);
 
 	/**
 	 * This method should retrieve all transactions of all accounts in chronological

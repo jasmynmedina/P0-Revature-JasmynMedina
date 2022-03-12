@@ -60,13 +60,12 @@ public class AccountDaoFile implements AccountDao {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Account> getAccounts() {
 		//try (ObjectInputStream actInput = new ObjectInputStream(new FileInputStream(fileLocation))) {
 		try {
 			FileInputStream fileInput = new FileInputStream(fileLocation);
 			ObjectInputStream actInput = new ObjectInputStream(fileInput);
-			accountList = (ArrayList<Account>)actInput.readObject();
+			List accountList = (List<Account>)actInput.readObject();
 			actInput.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -86,7 +85,7 @@ public class AccountDaoFile implements AccountDao {
 				actByUser.add(account);
 			}
 		}
-		return accountList;
+		return actByUser;
 	}
 
 	public Account updateAccount(Account a) {

@@ -32,8 +32,8 @@ public class UserDaoDB implements UserDao {
 	}
 
 	public User addUser(User user) {
-		String query = "INSERT INTO userTable (id, username, password, first_name, last_name, usertype) VALUES (?, ?, ?, ?, ?, ?)";
-		
+		String query = "INSERT INTO usertable (id, username, password, first_name, last_name, usertype) VALUES (?, ?, ?, ?, ?, ?)";
+		int status = 0;
 		try {
 			pstmt = conn.prepareStatement(query);
 			pstmt.setInt(1, user.getId());
@@ -46,7 +46,7 @@ public class UserDaoDB implements UserDao {
 			} else {
 				pstmt.setString(6, user.getUserType().toString());
 			}
-			pstmt.execute();
+			status = pstmt.executeUpdate();
 			return user;
 			//pstmt.setString(6, user.getUserType().toString());
 		} catch (SQLException e) {
@@ -56,7 +56,7 @@ public class UserDaoDB implements UserDao {
 	}
 
 	public User getUser(Integer userId) {
-		String query = "SELECT * FROM usertable WHERE id = " + userId;
+		String query = "SELECT * FROM usertable WHERE id = " + userId.intValue();
 		User user = new User();
 		String userType = "";
 		try {
@@ -83,14 +83,15 @@ public class UserDaoDB implements UserDao {
 	}
 
 	public User getUser(String username, String pass) {
-		String query = "SELECT * FROM usertable WHERE username = " + username + " AND password = " + pass;
-		User user = new User();
+		String query = "select * from usertable where username='"+username+"' and password='"+pass+"';";
+		User user = null;
 		String userType = "";
 
 		try {
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(query);
 			if(rs.next()) {
+				user = new User();
 				user.setId(rs.getInt("id"));
 				user.setUsername(rs.getString("username"));
 				user.setPassword(rs.getString("password"));
@@ -114,6 +115,7 @@ public class UserDaoDB implements UserDao {
 	public List<User> getAllUsers() {
 		String userType = "";
 		String query = "SELECT * FROM usertable";
+		List<User> userList = new ArrayList<User>();
 		try {
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(query);
@@ -156,7 +158,6 @@ public class UserDaoDB implements UserDao {
 				pstmt.setString(5, u.getUserType().toString());
 				pstmt.executeUpdate();
 				
-	
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -165,6 +166,7 @@ public class UserDaoDB implements UserDao {
 	
 		public boolean removeUser(User u) {
 			String query = "DELETE FROM usertable WHERE id=" + u.getId();
+
 			try {
 				stmt = conn.createStatement();
 				stmt.executeUpdate(query);

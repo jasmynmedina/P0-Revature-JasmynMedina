@@ -1,9 +1,11 @@
 package com.revature.dao;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,9 +17,11 @@ import com.revature.utils.ConnectionUtil;
 public class TransactionDaoDB implements TransactionDao {
 	private Connection conn;
 	private Statement stmt;
-	//private PreparedStatement pstmt;
+	private PreparedStatement pstmt;
 	private ResultSet rs;
 	List<Transaction> transList = new ArrayList<>();
+	AccountDao actDao = new AccountDaoDB();
+
 	
 	public TransactionDaoDB() {
 		try {
@@ -27,16 +31,39 @@ public class TransactionDaoDB implements TransactionDao {
 			e.printStackTrace();
 		}
 	}
+	
+	public Transaction addTransaction(Transaction t) {
+		String query = "INSERT INTO transactionTable (timestamp, sender, recipient, amount, transactiontype) VALUES (?, ?, ?, ?, ?)";
+		
+		try {
+			pstmt = conn.prepareStatement(query);
+
+			pstmt.setTimestamp(1, Timestamp.valueOf(t.getTimestamp()));
+			pstmt.setInt(2, t.getSender().getId());
+			pstmt.setInt(3, t.getRecipient().getId());
+			pstmt.setDouble(4, t.getAmount());
+			if (t.getType() == null) {
+				pstmt.setString(5, "");
+			} else {
+				pstmt.setString(5, t.getType().toString());
+			}
+			pstmt.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return t;
+	}
+	
 	public List<Transaction> getAllTransactions() {
-		String query = "SELECT * FROM transactionsTable";
+		String query = "SELECT * FROM transactionTable";
 		try {
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery(query);
 			while (rs.next()) {
 				Transaction transaction = new Transaction();
 				transaction.setTimestamp(rs.getTimestamp(1).toLocalDateTime());
-				transaction.setSender((Account) rs.getObject("sender"));
-				transaction.setRecipient((Account) rs.getObject("recipient"));
+				transaction.setSender(actDao.getAccount(rs.getInt("sender")));
+				transaction.setRecipient(actDao.getAccount(rs.getInt("recipient")));
 				transaction.setAmount(rs.getDouble("amount"));
 				transaction.setType((TransactionType) rs.getObject("transactiontype"));
 				if(rs.getObject("transactiontype") == TransactionType.TRANSFER) {

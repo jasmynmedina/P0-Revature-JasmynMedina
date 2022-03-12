@@ -68,50 +68,92 @@ public class UserDaoFile implements UserDao {
 		return null;
 	}
 	
-
-	//@SuppressWarnings("unchecked")
 	public List<User> getAllUsers() {
-		try (ObjectInputStream userInput = new ObjectInputStream(new FileInputStream(fileLocation))) {
-			//userList =(List<User>)userInput.readObject();
-			do {
-			userList.add((User) userInput.readObject());
-			} while(userInput.readObject() != null); 
-			userInput.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+		try (ObjectOutputStream userOutput = new ObjectOutputStream(new FileOutputStream(fileLocation))) {
+			userOutput.writeObject(userList);
+			userOutput.close();
+			// System.out.println("User Successfully Registered!!");
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+
+		try (ObjectInputStream userInput = new ObjectInputStream(new FileInputStream(fileLocation))) {
+			List user = (List<User>) userInput.readObject(); 
+			userInput.close();
+			System.out.println(user.toString());
+		} catch (FileNotFoundException e) {
+			System.out.println("File not found");
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("IOException:");
+			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
+			System.out.println("Class not found:");
 			e.printStackTrace();
 		}
+		
 		return userList;
 	}
-
+	
+//		List<User> userList = new ArrayList<User>();
+//		try (ObjectInputStream userInput = new ObjectInputStream(new FileInputStream(fileLocation))) {
+//			//userList =(List<User>)userInput.readObject();
+//			User user = (User) userInput.readObject();
+//			userList.add(user);
+//			userInput.close();
+//			userInput.close();
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//			e.printStackTrace();
+//		}
+	
 	public User updateUser(User u) {
 		userList = getAllUsers();
+		int index = 0;
 		for (User user : userList) {
 			if (user.getId().equals(u.getId())) {
-				userList.remove(u);
-				userList.add(u);
-				return u;
+				break;
 			}
-			try (ObjectOutputStream userOutput = new ObjectOutputStream(new FileOutputStream(fileLocation))) {
-				userOutput.writeObject(userList);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			index = u.getId();
 		}
-		return null;
+		userList.set(index, u);
+		
+		try (ObjectOutputStream userOutput = new ObjectOutputStream(new FileOutputStream(fileLocation))) {
+			userOutput.writeObject(userList);
+		} catch (IOException e) {
+			e.printStackTrace();
+	}
+		return u;
 	}
 
 	public boolean removeUser(User u) {
 		userList = getAllUsers();
-		boolean success = false;
-		if (userList.contains(u)) {
-			userList.remove(u);
-			success = true;
+		int index = 0;
+		//boolean success = false;
+		for (User user : userList) {
+			if (user.getId().equals(u.getId())) {
+				break;
+			}
+			index = u.getId();
 		}
-		return success;
+		userList.remove(index);
+		
+		try (ObjectOutputStream userOutput = new ObjectOutputStream(new FileOutputStream(fileLocation))) {
+			userOutput.writeObject(userList);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if(userList.contains(u)) {
+            return false;
+        }else {
+    		userList.remove(index);
+            return true;
+        }
+		
 	}
+
 
 }
