@@ -200,14 +200,13 @@ package com.revature.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import com.revature.beans.Account;
 import com.revature.beans.Transaction;
 import com.revature.beans.Transaction.TransactionType;
 import com.revature.beans.User;
-import com.revature.beans.User.UserType;
 import com.revature.dao.AccountDao;
+import com.revature.dao.TransactionDao;
 import com.revature.exceptions.OverdraftException;
 import com.revature.exceptions.UnauthorizedException;
 import com.revature.utils.SessionCache;
@@ -218,6 +217,7 @@ import com.revature.utils.SessionCache;
 public class AccountService {
 
 	public AccountDao actDao;
+	public TransactionDao transDao;
 	public static final double STARTING_BALANCE = 0.01;
 	List<Account> accountList = new ArrayList<Account>();
 	List<Transaction> transactions = new ArrayList<Transaction>();
@@ -249,6 +249,8 @@ public class AccountService {
 				t.setType(TransactionType.WITHDRAWAL);
 				t.setAmount(amount);
 				t.setTimestamp();
+				//transDao.addTransaction(t);
+
 				if (a.getTransactions() != null) {
 				transactions = a.getTransactions();
 				}
@@ -282,6 +284,7 @@ public class AccountService {
 			t.setType(TransactionType.DEPOSIT);
 			t.setAmount(amount);
 			t.setTimestamp();
+			//transDao.addTransaction(t);
 
 			if (a.getTransactions() != null) {
 			transactions = a.getTransactions();
@@ -319,15 +322,12 @@ public class AccountService {
 		} else {
 			fromAct.setBalance(fromActBal - amount);
 			toAct.setBalance(toAct.getBalance() + amount);
-
-			// Creates transaction
-
 			Transaction t = new Transaction();
 			t.setSender(fromAct);
 			t.setRecipient(toAct);
 			t.setAmount(amount);
 			t.setTimestamp();
-
+			//transDao.addTransaction(t);
 			if (fromAct.getTransactions() != null) {
 				transactions = fromAct.getTransactions();
 			}

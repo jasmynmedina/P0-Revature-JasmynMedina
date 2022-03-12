@@ -31,13 +31,12 @@ public class TransactionDaoDB implements TransactionDao {
 			e.printStackTrace();
 		}
 	}
-	
 	public Transaction addTransaction(Transaction t) {
+		if (t.getType().equals(TransactionType.TRANSFER)) {
 		String query = "INSERT INTO transactionTable (timestamp, sender, recipient, amount, transactiontype) VALUES (?, ?, ?, ?, ?)";
 		
 		try {
 			pstmt = conn.prepareStatement(query);
-
 			pstmt.setTimestamp(1, Timestamp.valueOf(t.getTimestamp()));
 			pstmt.setInt(2, t.getSender().getId());
 			pstmt.setInt(3, t.getRecipient().getId());
@@ -51,9 +50,25 @@ public class TransactionDaoDB implements TransactionDao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	} else {
+		String query = "INSERT INTO transactionTable (timestamp, sender, amount, transactiontype) VALUES (?, ?, ?, ?)";
+		try {
+			pstmt = conn.prepareStatement(query);
+			pstmt.setTimestamp(1, Timestamp.valueOf(t.getTimestamp()));
+			pstmt.setInt(2, t.getSender().getId());
+			pstmt.setDouble(3, t.getAmount());
+			if (t.getType() == null) {
+				pstmt.setString(4, "");
+			} else {
+				pstmt.setString(4, t.getType().toString());
+			}
+			pstmt.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 		return t;
 	}
-	
 	public List<Transaction> getAllTransactions() {
 		String query = "SELECT * FROM transactionTable";
 		try {

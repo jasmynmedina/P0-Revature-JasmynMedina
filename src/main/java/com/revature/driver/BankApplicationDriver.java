@@ -1,5 +1,8 @@
 package com.revature.driver;
 
+import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 import com.revature.beans.Account;
@@ -32,6 +35,8 @@ public class BankApplicationDriver {
 		TransactionDaoDB transDao = new TransactionDaoDB();
 		UserService userServ = new UserService(userDao, accountDao);
 		AccountService actServ = new AccountService(accountDao);
+		List<Transaction> transactions = new ArrayList<Transaction>();
+
 
 		Scanner sc = new Scanner(System.in);
 		boolean login = false;
@@ -49,6 +54,7 @@ public class BankApplicationDriver {
 			System.out.println("4. Exit");
 			System.out.println("Enter choice: ");
 			choice = sc.nextInt();
+
 
 			switch (choice) {
 			case 1:
@@ -176,6 +182,8 @@ public class BankApplicationDriver {
 						amount = sc.nextDouble();
 						try {
 						actServ.deposit(accountDao.getAccount(actId), amount);
+						accountDao.getAccount(actId).setTransactions(transactions);
+						System.out.println("Amount deposited!!");
 						} catch (UnsupportedOperationException e) {
 							e.printStackTrace();
 						} catch (OverdraftException e) {
@@ -189,6 +197,9 @@ public class BankApplicationDriver {
 						amount = sc.nextDouble();
 						try {
 						actServ.withdraw(accountDao.getAccount(actId), amount);
+						accountDao.getAccount(actId).setTransactions(transactions);
+						System.out.println("Amount withdrawn!!");
+
 						} catch (OverdraftException e) {
 							e.printStackTrace();
 						} catch (UnsupportedOperationException e) {
@@ -204,6 +215,9 @@ public class BankApplicationDriver {
 						toActId = sc.nextInt();
 						try {
 						actServ.transfer(accountDao.getAccount(actId), accountDao.getAccount(toActId), amount);
+						accountDao.getAccount(actId).setTransactions(transactions);
+						accountDao.getAccount(toActId).setTransactions(transactions);
+						System.out.println("Amount transfered!!");
 						} catch (UnsupportedOperationException e) {
 							e.printStackTrace();
 						} catch (OverdraftException e) {

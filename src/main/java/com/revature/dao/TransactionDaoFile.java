@@ -18,7 +18,6 @@ public class TransactionDaoFile implements TransactionDao {
 	public static String fileLocation = "transactions.txt";
 	//File transFile = new File(fileLocation);
 	List<Transaction> transList = new ArrayList<Transaction>();
-	List<Account> accountList = new ArrayList<Account>();
 	public TransactionDaoFile() {
 		File transFile = new File(fileLocation);
 		if(!transFile.exists()) {
@@ -41,34 +40,16 @@ public class TransactionDaoFile implements TransactionDao {
 		return transactions;
 	}
 
-//	public List<Transaction> getAllTransactions() {
-//		Transaction t = new Transaction();
-//		tranOsList.add(t);
-//		try (ObjectOutputStream transOutput = new ObjectOutputStream(new FileOutputStream(fileLocation))) {
-//			transOutput.writeObject(transList);
-//			transOutput.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		try (ObjectInputStream transInput = new ObjectInputStream(new FileInputStream(fileLocation))) {
-//			List transList = (List<Transaction>)transInput.readObject();
-//			transInput.close();
-//
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} catch (ClassNotFoundException e) {
-//			e.printStackTrace();
-//		}
-//
-//		return transList;
-//	}}
 	public List<Transaction> getAllTransactions() {
-		//try (ObjectInputStream transInput = new ObjectInputStream(new FileInputStream(fileLocation))) {
-		try {
-			FileInputStream transFile = new FileInputStream(fileLocation);
-			ObjectInputStream transInput = new ObjectInputStream(transFile);
+		Transaction t = new Transaction();
+		transList.add(t);
+		try (ObjectOutputStream transOutput = new ObjectOutputStream(new FileOutputStream(fileLocation))) {
+			transOutput.writeObject(transList);
+			transOutput.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try (ObjectInputStream transInput = new ObjectInputStream(new FileInputStream(fileLocation))) {
 			List transList = (List<Transaction>)transInput.readObject();
 			transInput.close();
 
@@ -80,15 +61,33 @@ public class TransactionDaoFile implements TransactionDao {
 			e.printStackTrace();
 		}
 
-		for (Account account : accountList) {
-			if (account.getTransactions() != null) {
-				List<Transaction> transactions = account.getTransactions();
-				for (Transaction t : transactions) {
-					transList.add(t);
-				}
-			}
-		}
-
 		return transList;
-	}
-}
+	}}
+//	public List<Transaction> getAllTransactions() {
+//		//try (ObjectInputStream transInput = new ObjectInputStream(new FileInputStream(fileLocation))) {
+//		try {
+//			FileInputStream transFile = new FileInputStream(fileLocation);
+//			ObjectInputStream transInput = new ObjectInputStream(transFile);
+//			List transList = (List<Transaction>)transInput.readObject();
+//			transInput.close();
+//
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//			e.printStackTrace();
+//		}
+//
+//		for (Account account : accountList) {
+//			if (account.getTransactions() != null) {
+//				List<Transaction> transactions = account.getTransactions();
+//				for (Transaction t : transactions) {
+//					transList.add(t);
+//				}
+//			}
+//		}
+//
+//		return transList;
+//	}
+//}
