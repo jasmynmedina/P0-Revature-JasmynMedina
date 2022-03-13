@@ -1,5 +1,6 @@
 package com.revature.driver;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Scanner;
 import com.revature.beans.Account;
 import com.revature.beans.Account.AccountType;
 import com.revature.beans.Transaction;
+import com.revature.beans.Transaction.TransactionType;
 import com.revature.beans.User;
 import com.revature.beans.User.UserType;
 import com.revature.dao.AccountDaoDB;
@@ -144,9 +146,14 @@ public class BankApplicationDriver {
 				int customer1 = 0; 
 				int actType = 0;
 				double amount = 0.0d;
-				AccountType chkAct = Account.AccountType.CHECKING;
-				AccountType saveAct = Account.AccountType.SAVINGS;
+//				AccountType chkAct = Account.AccountType.CHECKING;
+//				AccountType saveAct = Account.AccountType.SAVINGS;
 				Account act = new Account();
+				Transaction t = new Transaction();
+				TransactionType d = Transaction.TransactionType.DEPOSIT;
+				TransactionType tr = Transaction.TransactionType.TRANSFER;
+				TransactionType w = Transaction.TransactionType.WITHDRAWAL;
+
 				if (login = true && customer < 5) {
 					System.out.println("Choose an option below: ");
 					System.out.println("1. Create account");
@@ -162,13 +169,13 @@ public class BankApplicationDriver {
 						System.out.println("Would you like to open a 1. CHECKING or 2. SAVING account?");
 						actType = sc.nextInt();
 						if (actType == 1) {
-							act.setType(chkAct);
 							actServ.createNewAccount(SessionCache.getCurrentUser().get());
+							act.setType(Account.AccountType.CHECKING);
 							userDao.updateUser(SessionCache.getCurrentUser().get());
 							System.out.println("Great! Your checking account has been created!!");	
-						} if (actType == 2) {
-							act.setType(saveAct);
+						} else {
 							actServ.createNewAccount(SessionCache.getCurrentUser().get());
+							act.setType(Account.AccountType.SAVINGS);
 							userDao.updateUser(SessionCache.getCurrentUser().get());
 							System.out.println("Great! Your saving account has been created!!");		
 						}
@@ -182,7 +189,9 @@ public class BankApplicationDriver {
 						amount = sc.nextDouble();
 						try {
 						actServ.deposit(accountDao.getAccount(actId), amount);
-						accountDao.getAccount(actId).setTransactions(transactions);
+						t = new Transaction(accountDao.getAccount(actId), amount, d);
+						transDao.addTransaction(t);
+						//accountDao.getAccount(actId).setTransactions(transactions);
 						System.out.println("Amount deposited!!");
 						} catch (UnsupportedOperationException e) {
 							e.printStackTrace();
@@ -197,7 +206,9 @@ public class BankApplicationDriver {
 						amount = sc.nextDouble();
 						try {
 						actServ.withdraw(accountDao.getAccount(actId), amount);
-						accountDao.getAccount(actId).setTransactions(transactions);
+						//accountDao.getAccount(actId).setTransactions(transactions);
+						t = new Transaction(accountDao.getAccount(actId), amount, d);
+						transDao.addTransaction(t);
 						System.out.println("Amount withdrawn!!");
 
 						} catch (OverdraftException e) {
@@ -215,8 +226,10 @@ public class BankApplicationDriver {
 						toActId = sc.nextInt();
 						try {
 						actServ.transfer(accountDao.getAccount(actId), accountDao.getAccount(toActId), amount);
-						accountDao.getAccount(actId).setTransactions(transactions);
-						accountDao.getAccount(toActId).setTransactions(transactions);
+//						accountDao.getAccount(actId).setTransactions(transactions);
+//						accountDao.getAccount(toActId).setTransactions(transactions);
+						t = new Transaction(accountDao.getAccount(actId), accountDao.getAccount(toActId), amount, d);
+						transDao.addTransaction(t);
 						System.out.println("Amount transfered!!");
 						} catch (UnsupportedOperationException e) {
 							e.printStackTrace();
@@ -241,19 +254,20 @@ public class BankApplicationDriver {
 							actId = sc.nextInt();
 							System.out.println("Enter 1 to approve or 2 to reject: ");
 							int app = sc.nextInt();
-							if (actServ.approveOrRejectAccount(accountDao.getAccount(actId), app == 1)) {
+							if  (app == 1) {
+								actServ.approveOrRejectAccount(accountDao.getAccount(actId), accountDao.getAccount(actId).isApproved());
 								accountDao.getAccount(actId).setApproved(true);
+								accountDao.updateAccount(accountDao.getAccount(actId));
 								System.out.println("Account APPROVED!!!!");
 							} else {
-								accountDao.getAccount(actId).setApproved(false);
+							actServ.approveOrRejectAccount(accountDao.getAccount(actId), accountDao.getAccount(actId).isApproved());
+							accountDao.getAccount(actId).setApproved(false);
+							accountDao.updateAccount(accountDao.getAccount(actId));
 								System.out.println("Account REJECTED!!!!");
 							}
-
 							break;
 						case 2:
-							System.out.println("Enter account ID to view TRANSACTIONS: ");
-							actId = sc.nextInt();
-							System.out.println(actServ.actDao.getAccount(actId).getTransactions());
+							System.out.println(transDao.getAllTransactions());
 							break;
 						}
 					}
@@ -267,8 +281,8 @@ public class BankApplicationDriver {
 				for (Account a : accountDao.getAccounts()) {
 					System.out.println(a);
 				}
-				for (Transaction t : transDao.getAllTransactions()) {
-					System.out.println(t);
+				for (Transaction t2 : transDao.getAllTransactions()) {
+					System.out.println(t2);
 				}
 				break;
 			case 4:

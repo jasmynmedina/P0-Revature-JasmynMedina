@@ -95,6 +95,7 @@ public class AccountDaoFile implements AccountDao {
 		}
 		return a;
 	}
+	
 
 	public boolean removeAccount(Account a) {
 		accountList = getAccounts();
@@ -104,5 +105,6 @@ public class AccountDaoFile implements AccountDao {
 		}
 		return success;
 	}
+
 
 }

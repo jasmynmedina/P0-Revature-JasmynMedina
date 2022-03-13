@@ -356,9 +356,9 @@ public class AccountService {
 		a.setBalance(0.01);
 		a.setApproved(false);
 		if (actDao.getAccountsByUser(u) == null) {
-			a.setType(Account.AccountType.CHECKING);
-		} else {
 			a.setType(Account.AccountType.SAVINGS);
+		} else {
+			a.setType(Account.AccountType.CHECKING);
 		}
 		a.setTransactions(null);
 		if(actDao.getAccountsByUser(u)== null) {		

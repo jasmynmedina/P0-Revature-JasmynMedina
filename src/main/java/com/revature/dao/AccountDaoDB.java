@@ -134,11 +134,19 @@ public class AccountDaoDB implements AccountDao {
 	}
 
 	public Account updateAccount(Account a) {
-		String query = "UPDATE accountTable SET balance=? WHERE id=?";
+		String actType = "";
+		String query = "UPDATE accountTable SET ownerId=?, balance=?, approved=?, accountType=? WHERE id=?";
 		try {
 			pstmt = conn.prepareStatement(query);
-			pstmt.setDouble(1, a.getBalance());
-			pstmt.setInt(2, a.getId());
+			pstmt.setInt(1, a.getOwnerId());
+			pstmt.setDouble(2, a.getBalance());
+			pstmt.setBoolean(3, a.isApproved());
+			if (a.getType() == null) {
+				pstmt.setString(4, "");
+			} else {
+				pstmt.setString(4, a.getType().toString());
+			}
+			pstmt.setInt(5, a.getId());
 			accountList.add(a);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {

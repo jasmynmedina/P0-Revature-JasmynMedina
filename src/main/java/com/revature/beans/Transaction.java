@@ -130,4 +130,23 @@ public class Transaction implements Serializable {
 				+ type + ", timestamp=" + timestamp + "]";
 	}
 
+	public Transaction(Account fromAccountId, Double amount, TransactionType type) {
+		super();
+		this.fromAccountId = fromAccountId;
+		this.amount = amount;
+		this.type = type;
+	}
+
+	public Transaction(Account fromAccountId, Account toAccountId, Double amount, TransactionType type) {
+		super();
+		this.fromAccountId = fromAccountId;
+		this.toAccountId = toAccountId;
+		this.amount = amount;
+		this.type = type;
+	}
+
+	public Transaction() {
+		super();
+	}
+
 }
