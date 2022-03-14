@@ -45,7 +45,7 @@ public class TransactionDaoDB implements TransactionDao {
 			} else {
 				pstmt.setString(4, t.getType().toString());
 			}
-			pstmt.execute();
+			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -61,7 +61,7 @@ public class TransactionDaoDB implements TransactionDao {
 			} else {
 				pstmt.setString(3, t.getType().toString());
 			}
-			pstmt.execute();
+			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

@@ -207,7 +207,7 @@ public class BankApplicationDriver {
 						try {
 						actServ.withdraw(accountDao.getAccount(actId), amount);
 						//accountDao.getAccount(actId).setTransactions(transactions);
-						t = new Transaction(accountDao.getAccount(actId), amount, d);
+						t = new Transaction(accountDao.getAccount(actId), amount, w);
 						transDao.addTransaction(t);
 						System.out.println("Amount withdrawn!!");
 
@@ -228,7 +228,7 @@ public class BankApplicationDriver {
 						actServ.transfer(accountDao.getAccount(actId), accountDao.getAccount(toActId), amount);
 //						accountDao.getAccount(actId).setTransactions(transactions);
 //						accountDao.getAccount(toActId).setTransactions(transactions);
-						t = new Transaction(accountDao.getAccount(actId), accountDao.getAccount(toActId), amount, d);
+						t = new Transaction(accountDao.getAccount(actId), accountDao.getAccount(toActId), amount, tr);
 						transDao.addTransaction(t);
 						System.out.println("Amount transfered!!");
 						} catch (UnsupportedOperationException e) {
