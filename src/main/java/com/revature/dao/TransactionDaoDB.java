@@ -83,7 +83,7 @@ public class TransactionDaoDB implements TransactionDao {
 				transType = rs.getString("transactiontype");
 				if(transType.equals("TRANSFER")) {
 					transaction.setType(TransactionType.TRANSFER);
-					transaction.setRecipient((Account) rs.getObject("recipient"));
+					transaction.setRecipient(actDao.getAccount(rs.getInt("recipient")));
 				} if (transType.equals("DEPOSIT")) {
 					transaction.setType(TransactionType.DEPOSIT);
 				} else if (transType.equals("WITHDRAWAL")) {
